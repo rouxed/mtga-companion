@@ -23,3 +23,8 @@ mtga_companion/card_cache.json
 .idea/
 .vscode/
 .DS_Store
+
+# Artefactos de makepkg / AUR
+packaging/aur/**/src/
+packaging/aur/**/pkg/
+*.pkg.tar.*

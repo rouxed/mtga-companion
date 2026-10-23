@@ -1,0 +1,24 @@
+pkgbase = mtga-companion-bin
+	pkgdesc = Native PyQt6 deck tracker and match history for Magic: The Gathering Arena
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/rouxed/mtga-companion
+	arch = x86_64
+	license = custom
+	depends = fuse2
+	depends = hicolor-icon-theme
+	depends = libxcb
+	depends = libxkbcommon
+	depends = xcb-util-cursor
+	provides = mtga-companion
+	conflicts = mtga-companion
+	options = !strip
+	options = !debug
+	source = mtga-companion-0.1.0-x86_64.AppImage::https://github.com/rouxed/mtga-companion/releases/download/v0.1.0/MTGA-Companion-0.1.0-x86_64.AppImage
+	source = mtga-companion.desktop
+	source = mtga-companion.png
+	sha256sums = ec15aacca6d074051288af00d1215a3c620645054f5d0f38a6d937bac6540e1d
+	sha256sums = 89e7614a6ceb100d964201bb620df0583ddd6bf6b218a3558b0cd8bfca1bc0b6
+	sha256sums = ae5f2025e8cccc18ff8dedacff39bd4603eca9f2de623710f1effc7baf7d4c19
+
+pkgname = mtga-companion-bin

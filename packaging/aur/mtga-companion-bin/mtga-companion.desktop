@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=MTGA Companion
+GenericName=MTG Arena Companion
+Comment=Deck tracker and match history for Magic: The Gathering Arena
+Exec=mtga-companion
+Icon=mtga-companion
+Terminal=false
+Categories=Game;
+Keywords=MTG;Magic;Arena;deck;tracker;
+StartupNotify=true

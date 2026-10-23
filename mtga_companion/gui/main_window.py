@@ -265,6 +265,7 @@ class MainWindow(QMainWindow):
         settings_scroll = QScrollArea()
         settings_scroll.setWidgetResizable(True)
         settings_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        settings_scroll.viewport().setStyleSheet("background: #0B0F14;")
         settings_scroll.setWidget(self.tab_settings)
 
         self.tabs.addTab(self.tab_dashboard, tr("Dashboard"))

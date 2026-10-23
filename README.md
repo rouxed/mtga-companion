@@ -1,207 +1,377 @@
-# MTGA Companion para Linux
+<div align="center">
 
-Clon del Companion de [Untapped.gg](https://untapped.gg) para **Magic: The Gathering Arena**, nativo para Linux (CachyOS / cualquier distro).
+<img src="mtga_companion/gui/assets/icons/logo.svg" alt="MTGA Companion" width="76">
 
-Lee el `Player.log` de MTG Arena (Steam/Proton, Lutris, Heroic/Epic, Bottles, Wine manual o una partición Windows) en tiempo real y te muestra:
+# MTGA Companion
 
-- **Dashboard**: winrate global (todo el historial), winrate diario (hoy, últimos 7 días, últimos 30 días) y partidas recientes.
-- **Historial**: listado completo de partidas con mazo, resultado, oponente y fecha.
-- **Mazos**: tus mazos con las cartas agrupadas por tipo (Criaturas, Tierras, Instantáneos, etc.) e imágenes reales de Scryfall, al estilo Untapped.gg.
-- **Meta**: mazos meta de internet (MTGGoldfish) para Standard, Historic, Explorer y Alchemy. Muestra el meta share y los precios de Tabletop/MTGO, y al seleccionar un mazo carga su decklist de muestra (main deck + banquillo) con imágenes reales de **Scryfall**. La lista se puede copiar en formato de importación de MTG Arena. El listado se cachea por formato durante 6 horas; si falla internet se usa la caché existente o mazos de respaldo locales.
-- **Overlay opcional**: deck tracker flotante sobre MTG Arena con las cartas que te quedan, probabilidades hipergeométricas de robo, contador de tierras y cartas vistas del oponente. Se calcula solo con tu mazo, tu mano y las zonas públicas o reveladas del log.
-- **Configuración**: selector de rutas detectadas, ruta manual de respaldo, nombre de jugador, arranque/parada del seguimiento en vivo, controles del overlay y selector de idioma (español/inglés).
+**Deck tracker y historial de partidas para Magic: The Gathering Arena en Linux.**  
+*A native deck tracker and match history for Magic: The Gathering Arena on Linux.*
 
-## Requisitos
+[![Release](https://img.shields.io/github/v/release/rouxed/mtga-companion?style=flat-square&color=D6B36A&label=release)](https://github.com/rouxed/mtga-companion/releases)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![PyQt6](https://img.shields.io/badge/PyQt6-6.6%2B-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.riverbankcomputing.com/software/pyqt/)
+[![Linux](https://img.shields.io/badge/platform-Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](https://www.kernel.org/)
+[![AppImage](https://img.shields.io/badge/package-AppImage-8A2BE2?style=flat-square)](https://appimage.org/)
+[![i18n](https://img.shields.io/badge/i18n-ES%20%7C%20EN-D6B36A?style=flat-square)](#idioma)
 
-- Python 3.10+
-- PyQt6, requests
-- MTG Arena instalado con Wine/Proton (Steam, Lutris, Heroic/Epic, Bottles o Wine manual) y haber jugado al menos una partida
-- En MTG Arena: **Configuración > Cuenta > "Detailed Logs (Plugin Support)" activado**
+[Español](#español) · [English](#english)
 
-## Instalación
+<img src="docs/screenshots/dashboard-es.png" alt="MTGA Companion — Dashboard" width="100%">
 
-```bash
-# Clonar / entrar al proyecto
-cd mtga-companion
+</div>
 
-# Crear entorno virtual e instalar dependencias
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r mtga_companion/requirements.txt
+---
+
+## Español
+
+**MTGA Companion** es una aplicación de escritorio nativa para Linux que lee el `Player.log` de **MTG Arena** en tiempo real y te muestra estadísticas, historial, mazos, meta decks y un overlay opcional durante la partida.
+
+Está pensada para jugar en **Wayland** sin sacrificar el overlay: la ventana principal corre de forma nativa y el overlay se ejecuta en un proceso XCB/XWayland separado, siempre encima del juego.
+
+> **Datos de demostración:** las capturas usan un historial y mazos de ejemplo, no datos reales de ninguna cuenta.
+
+### Capturas
+
+| Dashboard | Historial |
+|:---:|:---:|
+| <img src="docs/screenshots/dashboard-es.png" width="100%"> | <img src="docs/screenshots/history-es.png" width="100%"> |
+| **Mazos** | **Meta** |
+| <img src="docs/screenshots/decks-es.png" width="100%"> | <img src="docs/screenshots/meta-es.png" width="100%"> |
+| **Overlay en partida** | **Configuración** |
+| <img src="docs/screenshots/overlay-es.png" width="100%"> | <img src="docs/screenshots/settings-es.png" width="100%"> |
+
+### Funciones
+
+- **Dashboard**: winrate global, victorias, derrotas, partidas sin resultado y winrate de hoy, últimos 7 días y últimos 30 días.
+- **Historial**: todas las partidas registradas con fecha, mazo, formato, resultado, oponente y cantidad de cartas. Incluye búsqueda por mazo, oponente o formato.
+- **Mazos**: tus mazos agrupados por tipo de carta, con imágenes reales de Scryfall y estadísticas por mazo.
+- **Meta**: mazos populares de MTGGoldfish para Standard, Historic, Explorer y Alchemy, con meta share, precios, decklist, banquillo y exportación lista para importar en Arena.
+- **Overlay opcional**: probabilidades de robo, contador de tierras, cartas restantes y cartas del oponente vistas en zonas públicas o reveladas.
+- **Privacidad primero**: solo lee el `Player.log`. No lee memoria del juego, no accede a la biblioteca oculta ni a la mano oculta del oponente.
+- **Español e inglés**: la interfaz completa se puede cambiar en caliente desde Configuración, sin reiniciar la aplicación.
+- **Tema oscuro**: interfaz nativa con estilo Arena, pensada para acompañar la partida.
+
+### Privacidad
+
+El companion **no** usa memoria del juego, **no** lee la mano oculta del oponente y **no** intenta obtener la carta superior de la biblioteca. Toda la información del oponente sale de zonas públicas o reveladas del `Player.log`; las probabilidades se calculan solo con tu mazo y tu mano.
+
+La base de datos, la caché de cartas y los ajustes se guardan localmente en tus directorios XDG:
+
+```text
+~/.local/share/mtga-companion/
+~/.config/mtga-companion/
 ```
 
-## Ejecución
+### Instalación
+
+#### AppImage (recomendado)
+
+Descargá el AppImage desde [Releases](https://github.com/rouxed/mtga-companion/releases/latest):
 
 ```bash
+chmod +x MTGA-Companion-0.1.0-x86_64.AppImage
+./MTGA-Companion-0.1.0-x86_64.AppImage
+```
+
+En Arch Linux, el AppImage necesita FUSE 2:
+
+```bash
+sudo pacman -S --needed fuse2
+```
+
+Si tu sistema no permite montar AppImages, usá el modo de extracción:
+
+```bash
+APPIMAGE_EXTRACT_AND_RUN=1 ./MTGA-Companion-0.1.0-x86_64.AppImage
+```
+
+#### Desde el código fuente
+
+Requisitos: Linux, Python 3.11+ y las dependencias de `mtga_companion/requirements.txt`.
+
+```bash
+git clone https://github.com/rouxed/mtga-companion.git
+cd mtga-companion
+python -m venv .venv
 source .venv/bin/activate
+pip install -r mtga_companion/requirements.txt
 python -m mtga_companion
 ```
 
-La aplicación es una ventana de escritorio (PyQt6), no un servidor web.
-
-## Distribución (AppImage)
-
-El formato principal de distribución es un **AppImage**. No requiere Python instalado ni permisos de root, y mantiene acceso directo al `Player.log` y a los prefijos de Proton (un sandbox como Flatpak complicaría esas rutas).
-
-### Construir
+También podés usar el lanzador incluido:
 
 ```bash
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-./packaging/build_appimage.sh
+./run.sh
 ```
 
-El script usa PyInstaller en modo `onedir`, arma el `AppDir` y lo empaqueta con `appimagetool` (si no está, lo descarga a `build/tools/`). El resultado es:
+#### Arch Linux / AUR
+
+El `PKGBUILD` de `mtga-companion-bin` está incluido en:
 
 ```text
-dist/MTGA-Companion-0.1.0-x86_64.AppImage
-dist/MTGA-Companion-0.1.0-x86_64.AppImage.sha256
+packaging/aur/mtga-companion-bin/
 ```
 
-La versión sale de `mtga_companion/__init__.py`; cambiala ahí para generar una release nueva. El icono ya está incluido en `packaging/`; solo hace falta `rsvg-convert` si querés regenerarlo. El `.sha256` se genera junto al AppImage para verificar la descarga:
+Para probarlo localmente:
 
 ```bash
-cd dist
-sha256sum -c MTGA-Companion-0.1.0-x86_64.AppImage.sha256
-cd ..
+cd packaging/aur/mtga-companion-bin
+makepkg -si
 ```
 
-### Ejecutar
+El paquete instala el AppImage del release, el lanzador `mtga-companion`, el icono y el archivo `.desktop`.
 
-```bash
-chmod +x dist/MTGA-Companion-0.1.0-x86_64.AppImage
-./dist/MTGA-Companion-0.1.0-x86_64.AppImage
-./dist/MTGA-Companion-0.1.0-x86_64.AppImage --version
-```
+### Uso
 
-Como el AppImage incluye Python, PyQt6 y Qt, no necesita el entorno virtual. Si el sistema no tiene FUSE disponible, se puede extraer y ejecutar igual:
+1. Abrí **MTG Arena**.
+2. Iniciá **MTGA Companion**.
+3. La aplicación detecta automáticamente el `Player.log` de Steam/Proton, Lutris, Heroic/Epic, Bottles, Wine manual o una partición Windows.
+4. Si hay varias instalaciones, elegí la ruta correcta en **Configuración → Player.log de MTG Arena**.
+5. El historial y las estadísticas se actualizan al terminar cada partida.
 
-```bash
-APPIMAGE_EXTRACT_AND_RUN=1 ./dist/MTGA-Companion-0.1.0-x86_64.AppImage
-```
-
-El AppImage no guarda datos dentro de sí mismo: sigue usando las rutas XDG de la tabla de abajo. La app principal corre en Wayland y el overlay se relanza desde el mismo ejecutable con `--overlay-process` en un proceso XCB/XWayland.
-
-## Interfaz
-
-La interfaz usa un tema oscuro con navegación lateral, superficies en capas y acentos dorados. El **Dashboard** muestra el winrate global en un anillo y las partidas recientes en una tabla compacta. Las pestañas **Mazos** y **Meta** presentan las cartas en una grilla de imágenes adaptable al ancho de la ventana, con la cantidad sobre cada carta. El detalle de un mazo meta incluye metadatos, banquillo y un panel para copiar la lista en formato MTG Arena.
+El overlay está desactivado por defecto. Se activa desde **Configuración → Overlay de partida**, donde también podés elegir posición, opacidad y click-through.
 
 ### Idioma
 
-La aplicación está disponible en **español** e **inglés**. El idioma inicial es español; se cambia en **Configuración > Idioma** y se guarda en `settings.json` con la clave `language`. El cambio se aplica inmediatamente reconstruyendo la ventana y reiniciando el overlay con el idioma elegido. No se detecta automáticamente desde el locale del sistema.
+La aplicación arranca en **español** por defecto. El idioma se cambia manualmente en **Configuración → Idioma** y se guarda en `settings.json`:
 
-Las cadenas fuente siguen en español y se traducen en tiempo de ejecución desde `mtga_companion/i18n.py`; el proceso auxiliar del overlay recibe el idioma mediante `MTGA_COMPANION_LANG`.
+```json
+{
+  "language": "en"
+}
+```
 
-## Overlay de partida
+No se detecta automáticamente desde el locale del sistema. El overlay recibe el idioma mediante `MTGA_COMPANION_LANG` y se reinicia con la traducción elegida.
 
-El overlay se activa con el botón **Overlay** de la cabecera o desde **Configuración > Overlay de partida**. Es opcional y arranca desactivado.
+### Overlay y Wayland
 
-- **Mazo restante**: lista las cartas que todavía tenés en la biblioteca, agrupadas por tipo y con la probabilidad de robar cada una en el próximo robo.
-- **Probabilidades**: muestra la chance del **próximo robo** y de robar al menos una carta de tierras, criaturas, hechizos y otras en los **próximos 3 robos**.
-- **Tierras**: cuenta las tierras en el campo de batalla, cuántas están sin girar, las que tenés en mano y las que quedan en la biblioteca. Las tierras giradas/desgiradas se actualizan con las anotaciones del log.
-- **Cartas vistas del oponente**: acumula las cartas del oponente que aparecen en zonas públicas o reveladas (pila, cementerio, exilio, comando y `ZoneType_Revealed`). **No lee la mano ni la biblioteca del oponente, ni la carta de arriba de tu biblioteca.** La lista se reinicia al empezar una partida nueva.
-- Las probabilidades son hipergeométricas y usan el mazo actual, las cartas en la biblioteca y las cartas propias conocidas en mano, campo, cementerio, exilio, pila y comando. No se lee memoria del juego.
-- No modela scry, surveil, tutores, milagros ni cartas que cambian el orden de la biblioteca; por eso las probabilidades son de robos naturales y pueden diferir de las de otros trackers.
-- Por defecto es click-through (los clics pasan al juego), aparece **centrado a la izquierda** de la pantalla y usa opacidad 94%. Podés elegir las cuatro esquinas o los laterales centrados (centro izquierda / centro derecha). Si desactivás click-through, podés moverlo con el mouse. La posición, opacidad y click-through se guardan en la configuración.
-- En KDE Wayland la ventana principal sigue usando Wayland y el overlay se ejecuta en un proceso aparte con XCB/XWayland. Necesita un servidor X11 o XWayland (`DISPLAY`); si no existe, la app lo informa en Configuración y el resto sigue funcionando.
-- La ventana se oculta al terminar la partida y vuelve a aparecer en la siguiente. Los nombres y tipos de cartas se resuelven con Scryfall en segundo plano; mientras tanto el panel muestra **Resolviendo cartas**.
+- La ventana principal puede ejecutarse de forma nativa en Wayland.
+- El overlay se lanza como un proceso hijo con backend XCB/XWayland para poder usar una ventana transparente, click-through y siempre encima de Arena.
+- El estado del overlay, la posición, la opacidad y el click-through se conservan entre sesiones.
+- El overlay es opcional y no bloquea los clics del juego cuando `click-through` está activo.
 
-## Pruebas
+### Desarrollo
 
 ```bash
-# Dependencias de desarrollo (incluye las de ejecución)
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements-dev.txt
-
-# Toda la suite
-python -m pytest
-
-# Un archivo en particular
-python -m pytest tests/test_parser.py -v
+pytest -q
+ruff check --select F,E9 mtga_companion tests
 ```
 
-Las pruebas no necesitan un servidor gráfico: usan el plugin `offscreen` de Qt.
+Para generar el AppImage:
 
-## Primera vez
-
-1. Abrí la aplicación con `./run.sh`.
-2. El `Player.log` se detecta automáticamente buscando el patrón interno de cualquier prefijo Wine/Proton (`drive_c/users/*/AppData/LocalLow/Wizards Of The Coast/MTGA/Player.log`) en instalaciones de Steam (nativo y Flatpak), Lutris, Heroic/Epic, Bottles, Wine manual y particiones Windows montadas. El seguimiento se inicia solo, incluso si MTG Arena todavía no está abierto: el watcher espera a que aparezca el archivo y lo vuelve a detectar cuando el juego lo crea.
-   - Si hay varias instalaciones, en **Configuración** podés elegir la ruta en el selector **Detectadas**; se usa por defecto la más reciente. La ruta manual sigue teniendo prioridad.
-   - Si no se detecta, usá **Examinar…** o pegá una ruta que todavía no exista; el watcher la esperará.
-3. Ingresá tu nombre de jugador de Arena (formato `Nombre#12345`) en Configuración para que el companion sepa cuándo ganaste o perdiste.
-4. Jugá partidas en MTG Arena; se irán registrando solas en el Dashboard y el Historial.
-
-## Dónde se guardan los datos
-
-La aplicación usa las rutas estándar XDG, no escribe datos dentro del paquete:
-
-| Dato | Ruta |
-| --- | --- |
-| Base de datos SQLite | `~/.local/share/mtga-companion/mtga_companion.db` |
-| Caché de cartas / meta | `~/.local/share/mtga-companion/card_cache.json`, `meta_cache.json` |
-| Imágenes de cartas | `~/.local/share/mtga-companion/card_images/` |
-| Configuración | `~/.config/mtga-companion/settings.json` |
-| Logs rotativos | `~/.local/share/mtga-companion/logs/mtga-companion.log` |
-
-En la primera ejecución se **copian** automáticamente los datos de la versión anterior que estaban en `mtga_companion/data/` y `mtga_companion/settings.json`. Los archivos originales no se borran, así que quedan como copia de seguridad. Si `XDG_DATA_HOME` o `XDG_CONFIG_HOME` están definidos, se respetan.
-
-> **Importante:** En MTG Arena, activá **Configuración > Cuenta > "Detailed Logs (Plugin Support)"**, si no el juego no escribe suficiente detalle en el log y el companion no podrá trackear tus partidas.
-
-## Cómo funciona
-
-- Un hilo de fondo hace `tail -f` del `Player.log` de MTG Arena, con detección de rotación/truncado y re-escaneo automático de prefijos Wine/Proton si el archivo todavía no existe.
-- Detecta mazos al inicio de cada partida (`CourseDeckSummary`) y el resultado al terminar (`matchGameRoomStateChangedEvent` + `MatchCompleted`).
-- Al arrancar hace un backfill de los últimos 5 MB del log: recupera el mazo de una partida en curso y una partida que haya terminado hace pocos minutos, sin duplicar el historial.
-- Cada partida se guarda con la hora real del log y el `matchId` de Arena. El `matchId` tiene un índice único, así que reinicios, relecturas y backfills no duplican partidas.
-- La base SQLite se migra automáticamente con `PRAGMA user_version` (esquema actual: 2, con `match_id`).
-- Los IDs internos de cartas de Arena se resuelven a nombres e imágenes mediante la API pública de **Scryfall** (sin API key), con caché local en disco.
-- Para el overlay, el watcher reconstruye las zonas GRE de la partida en curso, las tierras y las cartas públicas del oponente. El motor calcula las probabilidades con la lista del mazo activo y el proceso XCB recibe solo un JSON compacto; nunca recibe la identidad de la carta superior de la biblioteca ni la mano oculta del oponente.
-- La pestaña Meta usa un listado por formato (Standard, Historic, Explorer, Alchemy) con TTL de 6 horas. Las shares (`11.5%`) y los precios (`$241` Tabletop, `42 tix` MTGO) se normalizan antes de mostrarse. La caché antigua de un solo formato se migra automáticamente al leerla.
-- El decklist de un arquetipo se obtiene del main deck + sideboard de muestra de MTGGoldfish y se exporta con encabezados `Deck`/`Sideboard`, el formato que acepta MTG Arena.
-- Al cerrar se detienen el watcher, los temporizadores y los hilos de descarga de forma cooperativa. El proceso del overlay se cierra por EOF; solo si no responde se fuerza su terminación.
-
-## Estructura del proyecto
-
+```bash
+./packaging/build_appimage.sh
 ```
+
+El resultado queda en `dist/MTGA-Companion-0.1.0-x86_64.AppImage`.
+
+### Estructura
+
+```text
 mtga_companion/
-  main.py           # Punto de entrada: logging, migración, QApplication
-  __main__.py       # Permite `python -m mtga_companion`
-  config.py         # Rutas XDG, migración y escáner universal de prefijos Wine/Proton
-  i18n.py           # Traducciones español/inglés y cambio de idioma en tiempo de ejecución
-  database.py       # SQLite: esquema/migraciones, partidas, mazos, estadísticas
-  logging_config.py # Log rotativo + excepthook + mensajes de Qt
-  models.py         # Modelos de datos
-  parser.py         # Parser del Player.log (mazos + resultados + matchId)
-  log_watcher.py    # Tail -f, backfill, rotación/truncado y deduplicación
-  game_state.py     # Reconstruye zonas, tierras y cartas públicas desde los mensajes GRE
-  draw_odds.py      # Probabilidades, deck tracker y cartas vistas del oponente
-  overlay_positions.py # Posiciones admitidas del overlay
-  overlay_process.py # Proceso XCB que dibuja el overlay y recibe snapshots JSON
-  overlay_window.py  # Panel transparente y click-through del overlay
-  scryfall.py       # Cliente Scryfall (nombres + imágenes de cartas)
-  meta_fetcher.py   # MTGGoldfish (listado + decklists), caché TTL y fallback
-  thread_registry.py# Cierre cooperativo de hilos
-  gui/              # Interfaz de escritorio PyQt6
-    theme.py        # Paleta, QSS global e íconos
-    main_window.py  # Ventana principal con sidebar y cabecera
-    dashboard_widget.py
-    history_widget.py
-    decks_widget.py
-    settings_widget.py
-    meta_widget.py
-    overlay_controller.py # Ciclo de vida del proceso de overlay y envío de estado
-    assets/icons/   # Íconos SVG del tema
-    widgets/        # CardTile, DeckGroup, ImageLoader, DeckLoader, UI
-packaging/          # PyInstaller, .desktop, icono y build del AppImage
-tests/              # Suite de regresión con pytest
+  main.py           # Entrada de la aplicación
+  i18n.py           # Traducciones español/inglés
+  config.py         # Rutas XDG, migración y detección de Player.log
+  database.py       # SQLite: partidas, mazos y estadísticas
+  log_watcher.py    # Seguimiento del Player.log
+  parser.py         # Parseo de eventos de MTG Arena
+  game_state.py     # Estado de la partida y cartas reveladas
+  draw_odds.py      # Probabilidades hipergeométricas
+  scryfall.py       # Imágenes y metadatos de cartas
+  meta_fetcher.py   # MTGGoldfish, caché y fallback
+  overlay_window.py # UI del overlay
+  overlay_process.py # Proceso XCB del overlay
+  gui/              # Ventana principal y pestañas
+tests/              # Suite de pruebas
+packaging/          # PyInstaller, AppImage, .desktop, AUR
+docs/screenshots/   # Capturas para este README
 ```
 
-## Limitaciones conocidas
+### Estado
 
-- El nombre de algunos mazos predeterminados aparece como claves de localización (ej. `?=?Loc/Decks/Precon/...`) porque MTG Arena no escribe el nombre traducido en el log.
-- El parser se basa en marcadores del `Player.log` que no son un estándar oficial; pueden cambiar con actualizaciones del juego.
-- MTGGoldfish no siempre publica mazos para todos los formatos (Alchemy suele aparecer vacío); en ese caso la pestaña Meta lo indica y no inventa datos.
-- No hay integración de colección: MTG Arena no expone tus cartas en un archivo local y no se lee la memoria del proceso.
-- El overlay requiere X11/XWayland y un compositor que respete ventanas override-redirect; en Wayland puro sin XWayland no se muestra (la app principal sigue funcionando).
-- Las probabilidades del overlay son solo para robos naturales: no contemplan scry, surveil, tutores, robos extra ni cartas que muevan o barajen la biblioteca.
-- Las **cartas vistas del oponente** solo incluyen lo que Arena escribe como público o revelado. Si una carta nunca pasó por esas zonas, el overlay no puede mostrarla y no intenta adivinarla.
-- El seguimiento en vivo depende de **Detailed Logs (Plugin Support)** activado en MTG Arena.
+Versión **0.1.0**. Suite de pruebas: **140 tests**.
+
+### Aviso legal
+
+Proyecto personal, no afiliado a Wizards of the Coast, Hasbro ni Untapped.gg. *Magic: The Gathering Arena* y sus marcas pertenecen a Wizards of the Coast. Las imágenes de cartas se obtienen de Scryfall; los datos de meta, de MTGGoldfish.
+
+---
+
+## English
+
+**MTGA Companion** is a native Linux desktop app that tails the **MTG Arena** `Player.log` in real time and gives you match history, deck stats, meta decks, and an optional in-game overlay.
+
+It is designed for **Wayland** without giving up the overlay: the main window runs natively, while the overlay runs in a separate XCB/XWayland process and stays above the game.
+
+> **Demo data:** the screenshots use a sample history and sample decks, not real account data.
+
+### Screenshots
+
+| Dashboard | History |
+|:---:|:---:|
+| <img src="docs/screenshots/dashboard-en.png" width="100%"> | <img src="docs/screenshots/history-en.png" width="100%"> |
+| **Decks** | **Meta** |
+| <img src="docs/screenshots/decks-en.png" width="100%"> | <img src="docs/screenshots/meta-en.png" width="100%"> |
+| **In-game overlay** | **Settings** |
+| <img src="docs/screenshots/overlay-en.png" width="100%"> | <img src="docs/screenshots/settings-en.png" width="100%"> |
+
+### Features
+
+- **Dashboard**: overall winrate, wins, losses, unknown results, and winrate for today, the last 7 days, and the last 30 days.
+- **History**: every recorded match with date, deck, format, result, opponent, and card count. Search by deck, opponent, or format.
+- **Decks**: your decks grouped by card type, with real Scryfall card art and per-deck stats.
+- **Meta**: popular MTGGoldfish decks for Standard, Historic, Explorer, and Alchemy, with meta share, prices, decklist, sideboard, and a ready-to-paste Arena export.
+- **Optional overlay**: draw odds, land count, remaining deck, and opponent cards seen in public or revealed zones.
+- **Privacy first**: reads only `Player.log`. It does not read game memory, the hidden library, or the opponent's hidden hand.
+- **Spanish and English**: switch the entire UI live from Settings, without restarting the app.
+- **Dark theme**: a native Arena-inspired interface built for side-by-side play.
+
+### Privacy
+
+The companion **does not** read game memory, the opponent's hidden hand, or the top card of the library. All opponent information comes from public or revealed zones in `Player.log`; draw odds are calculated only from your deck and hand.
+
+The database, card cache, and settings stay local in your XDG directories:
+
+```text
+~/.local/share/mtga-companion/
+~/.config/mtga-companion/
+```
+
+### Installation
+
+#### AppImage (recommended)
+
+Download the AppImage from [Releases](https://github.com/rouxed/mtga-companion/releases/latest):
+
+```bash
+chmod +x MTGA-Companion-0.1.0-x86_64.AppImage
+./MTGA-Companion-0.1.0-x86_64.AppImage
+```
+
+On Arch Linux, the AppImage needs FUSE 2:
+
+```bash
+sudo pacman -S --needed fuse2
+```
+
+If your system cannot mount AppImages, use extract-and-run mode:
+
+```bash
+APPIMAGE_EXTRACT_AND_RUN=1 ./MTGA-Companion-0.1.0-x86_64.AppImage
+```
+
+#### From source
+
+Requirements: Linux, Python 3.11+, and the packages in `mtga_companion/requirements.txt`.
+
+```bash
+git clone https://github.com/rouxed/mtga-companion.git
+cd mtga-companion
+python -m venv .venv
+source .venv/bin/activate
+pip install -r mtga_companion/requirements.txt
+python -m mtga_companion
+```
+
+Or use the included launcher:
+
+```bash
+./run.sh
+```
+
+#### Arch Linux / AUR
+
+The `mtga-companion-bin` `PKGBUILD` lives in:
+
+```text
+packaging/aur/mtga-companion-bin/
+```
+
+To test it locally:
+
+```bash
+cd packaging/aur/mtga-companion-bin
+makepkg -si
+```
+
+The package installs the release AppImage, the `mtga-companion` launcher, the icon, and the `.desktop` file.
+
+### Usage
+
+1. Open **MTG Arena**.
+2. Start **MTGA Companion**.
+3. The app automatically detects the `Player.log` from Steam/Proton, Lutris, Heroic/Epic, Bottles, manual Wine, or a Windows partition.
+4. If you have multiple installations, pick the right path in **Settings → MTG Arena Player.log**.
+5. History and stats update when each match ends.
+
+The overlay is disabled by default. Enable it in **Settings → Match overlay**, where you can also choose position, opacity, and click-through.
+
+### Language
+
+The app starts in **Spanish** by default. Change it manually in **Settings → Language**; the choice is stored in `settings.json`:
+
+```json
+{
+  "language": "en"
+}
+```
+
+It is not auto-detected from the system locale. The overlay receives the language through `MTGA_COMPANION_LANG` and restarts with the selected translation.
+
+### Overlay and Wayland
+
+- The main window can run natively on Wayland.
+- The overlay is launched as a child process with the XCB/XWayland backend so it can be transparent, click-through, and always on top of Arena.
+- Overlay state, position, opacity, and click-through are preserved between sessions.
+- The overlay is optional and does not block game clicks when `click-through` is enabled.
+
+### Development
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+pytest -q
+ruff check --select F,E9 mtga_companion tests
+```
+
+Build the AppImage:
+
+```bash
+./packaging/build_appimage.sh
+```
+
+The result is written to `dist/MTGA-Companion-0.1.0-x86_64.AppImage`.
+
+### Project layout
+
+```text
+mtga_companion/
+  main.py           # Application entry point
+  i18n.py           # Spanish/English translations
+  config.py         # XDG paths, migration, Player.log discovery
+  database.py       # SQLite: matches, decks, stats
+  log_watcher.py    # Player.log tailer
+  parser.py         # MTG Arena event parser
+  game_state.py     # Match state and revealed cards
+  draw_odds.py      # Hypergeometric draw odds
+  scryfall.py       # Card art and metadata
+  meta_fetcher.py   # MTGGoldfish, cache, and fallback
+  overlay_window.py # Overlay UI
+  overlay_process.py # XCB overlay process
+  gui/              # Main window and tabs
+tests/              # Test suite
+packaging/          # PyInstaller, AppImage, .desktop, AUR
+docs/screenshots/   # README screenshots
+```
+
+### Status
+
+Version **0.1.0**. Test suite: **140 tests**.
+
+### Legal
+
+Personal project, not affiliated with Wizards of the Coast, Hasbro, or Untapped.gg. *Magic: The Gathering Arena* and its marks belong to Wizards of the Coast. Card images are provided by Scryfall; meta data by MTGGoldfish.

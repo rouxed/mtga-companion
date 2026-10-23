@@ -162,7 +162,9 @@ class SettingsWidget(QWidget):
         self.watcher_status = QLabel(tr("Detenido"))
         set_chip(self.watcher_status, tr("Detenido"), "muted")
         self.watcher_status.setToolTip(tr("Estado del seguimiento de Arena"))
-        ctrl_layout.addWidget(self.watcher_status)
+        ctrl_layout.addWidget(
+            self.watcher_status, alignment=Qt.AlignmentFlag.AlignLeft
+        )
 
         root.addWidget(ctrl_group)
 

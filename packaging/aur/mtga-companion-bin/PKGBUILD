@@ -5,7 +5,7 @@ pkgrel=1
 pkgdesc="Native PyQt6 deck tracker and match history for Magic: The Gathering Arena"
 arch=('x86_64')
 url="https://github.com/rouxed/mtga-companion"
-license=('custom')
+license=('unknown')
 depends=(
     'fuse2'
     'hicolor-icon-theme'

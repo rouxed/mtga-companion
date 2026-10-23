@@ -1,0 +1,3 @@
+-r mtga_companion/requirements.txt
+pytest>=8.0
+pyinstaller>=6.0

@@ -1,0 +1,25 @@
+# Entorno virtual y cachés de Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Datos locales y secretos de la aplicación
+mtga_companion/settings.json
+mtga_companion/card_cache.json
+*.db
+*.log
+
+# Entornos de escritorio
+.idea/
+.vscode/
+.DS_Store

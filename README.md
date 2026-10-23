@@ -119,7 +119,7 @@ cd packaging/aur/mtga-companion-bin
 makepkg -si
 ```
 
-El paquete instala el AppImage del release, el lanzador `mtga-companion`, el icono y el archivo `.desktop`.
+El paquete instala el AppImage del release, el lanzador `mtga-companion`, el icono y el archivo `.desktop`. Las instrucciones de publicación están en [`packaging/aur/README.md`](packaging/aur/README.md).
 
 ### Uso
 
@@ -297,7 +297,7 @@ cd packaging/aur/mtga-companion-bin
 makepkg -si
 ```
 
-The package installs the release AppImage, the `mtga-companion` launcher, the icon, and the `.desktop` file.
+The package installs the release AppImage, the `mtga-companion` launcher, the icon, and the `.desktop` file. Publishing notes are in [`packaging/aur/README.md`](packaging/aur/README.md).
 
 ### Usage
 

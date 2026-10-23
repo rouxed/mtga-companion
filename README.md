@@ -34,11 +34,11 @@ Está pensada para jugar en **Wayland** sin sacrificar el overlay: la ventana pr
 
 | Dashboard | Historial |
 |:---:|:---:|
-| <img src="docs/screenshots/dashboard-es.png" width="100%"> | <img src="docs/screenshots/history-es.png" width="100%"> |
+| <img src="docs/screenshots/dashboard-es.png" alt="Dashboard de MTGA Companion" width="100%"> | <img src="docs/screenshots/history-es.png" alt="Historial de partidas" width="100%"> |
 | **Mazos** | **Meta** |
-| <img src="docs/screenshots/decks-es.png" width="100%"> | <img src="docs/screenshots/meta-es.png" width="100%"> |
+| <img src="docs/screenshots/decks-es.png" alt="Mazos con imágenes de cartas" width="100%"> | <img src="docs/screenshots/meta-es.png" alt="Meta decks" width="100%"> |
 | **Overlay en partida** | **Configuración** |
-| <img src="docs/screenshots/overlay-es.png" width="100%"> | <img src="docs/screenshots/settings-es.png" width="100%"> |
+| <img src="docs/screenshots/overlay-es.png" alt="Overlay durante la partida" width="100%"> | <img src="docs/screenshots/settings-es.png" alt="Configuración de MTGA Companion" width="100%"> |
 
 ### Funciones
 
@@ -212,11 +212,11 @@ It is designed for **Wayland** without giving up the overlay: the main window ru
 
 | Dashboard | History |
 |:---:|:---:|
-| <img src="docs/screenshots/dashboard-en.png" width="100%"> | <img src="docs/screenshots/history-en.png" width="100%"> |
+| <img src="docs/screenshots/dashboard-en.png" alt="MTGA Companion dashboard" width="100%"> | <img src="docs/screenshots/history-en.png" alt="Match history" width="100%"> |
 | **Decks** | **Meta** |
-| <img src="docs/screenshots/decks-en.png" width="100%"> | <img src="docs/screenshots/meta-en.png" width="100%"> |
+| <img src="docs/screenshots/decks-en.png" alt="Decks with card art" width="100%"> | <img src="docs/screenshots/meta-en.png" alt="Meta decks" width="100%"> |
 | **In-game overlay** | **Settings** |
-| <img src="docs/screenshots/overlay-en.png" width="100%"> | <img src="docs/screenshots/settings-en.png" width="100%"> |
+| <img src="docs/screenshots/overlay-en.png" alt="In-game overlay" width="100%"> | <img src="docs/screenshots/settings-en.png" alt="Settings" width="100%"> |
 
 ### Features
 
